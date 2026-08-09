@@ -6,6 +6,11 @@ export const locales: Locale[] = ["en", "uk"];
 export const translations = {
   en: {
     language: "Language",
+    modeSelection: {
+      SAFE: "Safe",
+      MANUAL: "Manual",
+      AUTO: "Auto",
+    },
     appLabel: "Nerf Defense Program",
     title: "AUTO SENTRY CONTROL INTERFACE",
     callsign: "CALLSIGN: BASTION-07",
@@ -55,6 +60,11 @@ export const translations = {
   },
   uk: {
     language: "Мова",
+    modeSelection: {
+      SAFE: "Безпечний",
+      MANUAL: "Ручний",
+      AUTO: "Автоматичний",
+    },
     appLabel: "Програма захисту Nerf",
     title: "ІНТЕРФЕЙС КОНТРОЛЮ АВТОМАТИЧНОГО СПОСТЕРЕЖЕННЯ",
     callsign: "ПОЗИВНИЙ: BASTION-07",
@@ -80,7 +90,7 @@ export const translations = {
     burstLength: "Тривалість черги",
     flywheelTemp: "Температура маховика",
     batteryReserve: "Резерв батареї",
-    controlSurface: "Керуюча поверхня",
+    controlSurface: "Панель керування",
     panAxis: "Вісь обертання",
     tiltAxis: "Вісь нахилу",
     eventLog: "Журнал подій",
@@ -93,12 +103,12 @@ export const translations = {
       "Маршрут патрулю синхронізовано з сіткою вузлів C4",
       "Оновлено таблицю сигнатур союзників",
       "Виявлено імпульс руху: сектор північно-схід",
-      "Класифікацію завершено: безпечна зона для пінистих снарядів",
+      "Класифікацію завершено: безпечна зона для снарядів",
     ],
     units: {
       meters: "м",
       degrees: "°",
-      darts: "дартси",
+      darts: "постріли",
       celsius: "C",
     },
   },

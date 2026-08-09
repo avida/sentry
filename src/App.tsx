@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { getInitialLocale, locales, type Locale, type LockState, translations } from "./i18n";
+import {
+  getInitialLocale,
+  locales,
+  type Locale,
+  type LockState,
+  translations,
+} from "./i18n";
 import { Display } from "./components/display";
 import "./App.css";
 
@@ -33,10 +39,18 @@ function App() {
     const modeBoost = mode === "AUTO" ? 16 : mode === "MANUAL" ? 8 : 0;
     const posturePenalty = Math.abs(tilt) > 22 ? 7 : 0;
     const rangePenalty = rangeGate > 24 ? 6 : 0;
-    return Math.max(20, Math.min(99, base + modeBoost - posturePenalty - rangePenalty));
+    return Math.max(
+      20,
+      Math.min(99, base + modeBoost - posturePenalty - rangePenalty),
+    );
   }, [autoTrack, mode, tilt, rangeGate]);
 
-  const lockState: LockState = targetConfidence >= 80 ? "HARD_LOCK" : targetConfidence >= 62 ? "TRACKING" : "SCANNING";
+  const lockState: LockState =
+    targetConfidence >= 80
+      ? "HARD_LOCK"
+      : targetConfidence >= 62
+        ? "TRACKING"
+        : "SCANNING";
 
   return (
     <main className="battlefield-shell">
@@ -52,7 +66,11 @@ function App() {
           <p>{clock.toLocaleTimeString(locale)}</p>
           <label className="locale-control">
             <span>{t.language}</span>
-            <select value={locale} onChange={(e) => setLocale(e.target.value as Locale)} aria-label={t.language}>
+            <select
+              value={locale}
+              onChange={(e) => setLocale(e.target.value as Locale)}
+              aria-label={t.language}
+            >
               {locales.map((item) => (
                 <option key={item} value={item}>
                   {item.toUpperCase()}
@@ -75,7 +93,7 @@ function App() {
                 className={item === mode ? "mode-btn active" : "mode-btn"}
                 onClick={() => setMode(item)}
               >
-                {item}
+                {t.modeSelection[item]}
               </button>
             ))}
           </div>
@@ -92,19 +110,30 @@ function App() {
           </div>
 
           <div className="toggle-row">
-            <button type="button" className="toggle" onClick={() => setArmed((value) => !value)}>
+            <button
+              type="button"
+              className="toggle"
+              onClick={() => setArmed((value) => !value)}
+            >
               {armed ? t.disarm : t.arm}
             </button>
-            <button type="button" className="toggle" onClick={() => setAutoTrack((value) => !value)}>
+            <button
+              type="button"
+              className="toggle"
+              onClick={() => setAutoTrack((value) => !value)}
+            >
               {autoTrack ? t.autoTrackOn : t.autoTrackOff}
             </button>
           </div>
         </aside>
 
         <section className="panel hud-panel">
-          <Display lockState={lockState} targetConfidence={targetConfidence} rangeGate={rangeGate}
-          signalingUrl="http://192.168.44.145:1984/api/webrtc?src=zavod2"
-           />
+          <Display
+            lockState={lockState}
+            targetConfidence={targetConfidence}
+            rangeGate={rangeGate}
+            signalingUrl="http://192.168.44.145:1984/api/webrtc?src=zavod2"
+          />
         </section>
 
         <aside className="panel telemetry-panel">
@@ -147,15 +176,33 @@ function App() {
         <div className="sliders">
           <label>
             {t.panAxis}
-            <input type="range" min={-90} max={90} value={pan} onChange={(e) => setPan(Number(e.target.value))} />
+            <input
+              type="range"
+              min={-90}
+              max={90}
+              value={pan}
+              onChange={(e) => setPan(Number(e.target.value))}
+            />
           </label>
           <label>
             {t.tiltAxis}
-            <input type="range" min={-45} max={45} value={tilt} onChange={(e) => setTilt(Number(e.target.value))} />
+            <input
+              type="range"
+              min={-45}
+              max={45}
+              value={tilt}
+              onChange={(e) => setTilt(Number(e.target.value))}
+            />
           </label>
           <label>
             {t.burstLength}
-            <input type="range" min={1} max={8} value={burst} onChange={(e) => setBurst(Number(e.target.value))} />
+            <input
+              type="range"
+              min={1}
+              max={8}
+              value={burst}
+              onChange={(e) => setBurst(Number(e.target.value))}
+            />
           </label>
           <label>
             {t.rangeGate}
