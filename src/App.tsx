@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { type LockState } from "./i18n";
 import { useI18nStore } from "./store/useI18nStore";
+import { useCameraIndexStore } from "./store/useCameraIndexStore";
 import { Display } from "./components/display";
 import Telemetry from "./components/telemetry";
 import ControlPanel from "./components/controlPanel";
@@ -30,6 +31,12 @@ function App() {
     const timer = window.setInterval(() => setClock(new Date()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  const signalingTemplate = useCameraIndexStore((s) => s.signalingTemplate);
+  const setSignalingTemplate = useCameraIndexStore((s) => s.setSignalingTemplate);
+
+
+  const formatSignalingUrl = useCameraIndexStore((s) => s.cameraUrl);
 
   const targetConfidence = useMemo(() => {
     const base = autoTrack ? 72 : 55;
@@ -134,7 +141,7 @@ function App() {
             lockState={lockState}
             targetConfidence={targetConfidence}
             rangeGate={rangeGate}
-            signalingUrl="http://192.168.44.145:1984/api/webrtc?src=zavod2"
+            signalingUrl={formatSignalingUrl()}
           />
         </div>
 
