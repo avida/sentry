@@ -197,9 +197,12 @@ h2 {
 }
 
 .hud-panel {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
+  /* Allow the hud-panel to grow to fill the panel's height in grid layout */
+  flex: 1 1 auto;
+  height: 100%;
 }
 
 .reticle-wrap {
@@ -207,14 +210,19 @@ h2 {
   border-radius: 6px;
   padding: 0.5rem;
   background: radial-gradient(circle at center, rgba(179, 187, 122, 0.16), rgba(17, 20, 15, 0.12));
+  /* Allow the reticle area to grow to fill available space */
+  flex: 1 1 auto;
+  display: flex;
 }
 
 .reticle {
   position: relative;
-  height: 260px;
+  height: 100%;
+  min-height: 160px;
   border: 1px solid rgba(205, 209, 155, 0.3);
   border-radius: 4px;
   overflow: hidden;
+  width: 100%;
 }
 
 .reticle-sweep {
@@ -293,17 +301,21 @@ h2 {
 }
 
 .controls .sliders {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  display: flex;
   gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: stretch;
 }
 
-.controls label {
-  display: grid;
+.controls .sliders > label {
+  display: flex;
+  flex-direction: column;
   gap: 0.4rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 0.82rem;
+  flex: 1 1 180px;
+  min-width: 140px;
 }
 
 input[type="range"] {
@@ -388,8 +400,79 @@ input[type="range"] {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* Preserve aspect ratio while filling parent. Use `contain` to avoid cropping, or `cover` to fill and crop. */
+  object-fit: contain;
+  object-position: center;
   z-index: 0;
   opacity: 0.95;
-  transform: scale(1.02);
+}
+
+/* Viewport that holds the video and overlays */
+.display-viewport {
+  position: relative;
+  width: 100%;
+  /* let the viewport grow to available space in the parent */
+  flex: 1 1 auto;
+  display: block;
+  min-height: 0;
+}
+
+/* Ensure react-grid-layout items' inner panels take full allocated height */
+.layout .panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Root wrapper for Display component to allow inner flex growth */
+.display-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Overlay area positioned on top of the video */
+.display-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.display-overlay .overlay-title {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.9rem;
+  margin: 0;
+  pointer-events: none;
+}
+
+.overlay-reticle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.reticle {
+  /* Position/size to match actual displayed video area via CSS vars set by WebrtcPlayer */
+  position: absolute;
+  left: var(--video-left, 5%);
+  top: var(--video-top, 10%);
+  width: var(--video-width, 90%);
+  height: var(--video-height, 80%);
+  max-width: 980px;
+  max-height: 620px;
+}
+
+/* Ensure the hud-readout below the video is visually separate */
+.hud-readout.below-viewport {
+  margin-top: 0.6rem;
 }
