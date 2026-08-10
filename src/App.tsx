@@ -31,8 +31,6 @@ function App() {
     return () => window.clearInterval(timer);
   }, []);
 
-  
-
   const targetConfidence = useMemo(() => {
     const base = autoTrack ? 72 : 55;
     const modeBoost = mode === "AUTO" ? 16 : mode === "MANUAL" ? 8 : 0;
@@ -52,14 +50,59 @@ function App() {
         : "SCANNING";
 
   const layout: Layout = [
-    { i: "mission", x: 0, y: 0, w: 3, h: 3 },
-    { i: "display", x: 3, y: 0, w: 6, h: 3 },
-    { i: "telemetry", x: 9, y: 0, w: 3, h: 3 },
-    { i: "control", x: 0, y: 12, w: 7, h: 1 },
-    { i: "logs", x: 7, y: 12, w: 5, h: 2 },
+    {
+      i: "mission",
+      x: 0,
+      y: 0,
+      w: 3,
+      h: 3,
+      moved: false,
+      static: false,
+    },
+    {
+      i: "display",
+      x: 3,
+      y: 0,
+      w: 6,
+      h: 4,
+      moved: false,
+      static: false,
+    },
+    {
+      i: "telemetry",
+      x: 9,
+      y: 0,
+      w: 3,
+      h: 3,
+      moved: false,
+      static: false,
+    },
+    {
+      i: "control",
+      x: 0,
+      y: 3,
+      w: 3,
+      h: 2,
+      moved: false,
+      static: false,
+    },
+    {
+      i: "logs",
+      x: 9,
+      y: 3,
+      w: 3,
+      h: 2,
+      moved: false,
+      static: false,
+    },
   ];
 
-  const gridWidth = typeof window !== "undefined" ? Math.max(900, window.innerWidth - 96) : 1200;
+  const gridWidth =
+    typeof window !== "undefined"
+      ? Math.max(900, window.innerWidth - 96)
+      : 1200;
+
+  const [_, setCurrentLayout] = useState<Layout>(layout);
 
   return (
     <main className="battlefield-shell">
@@ -71,6 +114,9 @@ function App() {
         className="layout reveal-2"
         layout={layout}
         width={gridWidth}
+        onLayoutChange={(l) => setCurrentLayout(l)}
+        onDragStop={(layout) => setCurrentLayout(layout)}
+        onResizeStop={(layout) => setCurrentLayout(layout)}
       >
         <div key="mission" className="panel mode-panel">
           <MissionProfile
@@ -113,6 +159,11 @@ function App() {
           <Logs />
         </div>
       </GridLayout>
+      {/* <div className="layout-debug" aria-hidden="false">
+        <pre style={{ whiteSpace: "pre-wrap", margin: 8 }}>
+          {JSON.stringify(currentLayout, null, 2)}
+        </pre>
+      </div> */}
     </main>
   );
 }
