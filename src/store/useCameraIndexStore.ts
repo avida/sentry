@@ -9,12 +9,14 @@ type SignalState = {
 };
 
 export const useCameraIndexStore = create<SignalState>((set, get) => {
-
   return {
     cameraIndex: 1,
     setCameraIndex: (n: number) => set({ cameraIndex: n }),
+    signalingTemplate: "",
+    setSignalingTemplate: (t: string) => set({ signalingTemplate: t }),
     cameraUrl: (index?: number) => {
-      return `http://192.168.44.145:1984/api/webrtc?src=zavod${get().cameraIndex}`;
+      const idx = typeof index === "number" ? index : get().cameraIndex;
+      return `http://192.168.44.145:1984/api/webrtc?src=zavod${idx}`;
     },
   };
 });

@@ -1,5 +1,11 @@
 import React from "react";
 import { useI18nStore } from "../store/useI18nStore";
+import { useCameraIndexStore } from "../store/useCameraIndexStore";
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import styles from "./missionProfile.module.css";
 
 type SentryMode = "SAFE" | "MANUAL" | "AUTO";
 
@@ -7,9 +13,9 @@ type Props = {
   mode: SentryMode;
   setMode: (m: SentryMode) => void;
   armed: boolean;
-  setArmed: (v: boolean) => void;
+  setArmed: React.Dispatch<React.SetStateAction<boolean>>;
   autoTrack: boolean;
-  setAutoTrack: (v: boolean) => void;
+  setAutoTrack: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const MissionProfile: React.FC<Props> = ({
@@ -21,6 +27,8 @@ const MissionProfile: React.FC<Props> = ({
   setAutoTrack,
 }) => {
   const t = useI18nStore((s) => s.t);
+  const cameraIndex = useCameraIndexStore((s) => s.cameraIndex);
+  const setCameraIndex = useCameraIndexStore((s) => s.setCameraIndex);
 
   return (
     <aside className="panel mode-panel">
@@ -55,7 +63,7 @@ const MissionProfile: React.FC<Props> = ({
           type="button"
           className="toggle"
           onClick={() =>
-            setArmed((value) => {
+            setArmed((value: boolean) => {
               const next = !value;
               if (next) {
                 try {
@@ -75,11 +83,29 @@ const MissionProfile: React.FC<Props> = ({
         <button
           type="button"
           className="toggle"
-          onClick={() => setAutoTrack((value) => !value)}
+          onClick={() => setAutoTrack((value: boolean) => !value)}
         >
           {autoTrack ? t.autoTrackOn : t.autoTrackOff}
         </button>
       </div>
+      <FormControl variant="filled" size="small" className={styles.cameraControl}>
+        <InputLabel id="camera-select-label" className={styles.cameraLabel}>
+          {t.camera}
+        </InputLabel>
+        <Select
+          labelId="camera-select-label"
+          value={cameraIndex}
+          label={t.camera}
+          onChange={(e) => setCameraIndex(Number(e.target.value))}
+          className={styles.cameraSelect}
+        >
+          {(t.cameraOptions ?? ["1", "2", "3", "4"]).map((label, i) => (
+            <MenuItem key={i} value={i + 1}>
+              {label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </aside>
   );
 };

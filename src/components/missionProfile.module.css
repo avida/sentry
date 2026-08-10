@@ -1,0 +1,45 @@
+/* Camera select (MUI) styling for MissionProfile component (CSS Modules) */
+.cameraControl {
+  margin-top: 0.75rem !important;
+  min-width: 260px !important;
+}
+.cameraControl .MuiFilledInput-root {
+  background: rgba(41, 47, 36, 0.9) !important;
+  border: 1px solid #8b9970 !important;
+  color: var(--text) !important;
+}
+.cameraControl .MuiFilledInput-root::before,
+.cameraControl .MuiFilledInput-root::after {
+  display: none !important;
+}
+.cameraLabel {
+  color: var(--accent) !important;
+  font-family: "Orbitron", sans-serif !important;
+  font-size: 0.64rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+.cameraSelect .MuiSelect-select {
+  padding: 0.18rem 0.45rem !important;
+  font-family: "Orbitron", sans-serif !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.06em !important;
+  color: var(--text) !important;
+}
+.cameraMenu {
+  /* Slightly lighter, higher-contrast background for readability */
+  background: rgba(52, 58, 46, 0.97) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(139, 153, 112, 0.35) !important;
+  box-shadow: 0 8px 24px rgba(8, 10, 8, 0.6) !important;
+}
+
+.cameraMenu .MuiMenuItem-root {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+
+.cameraMenu .MuiMenuItem-root:hover {
+  background: rgba(209, 166, 90, 0.12) !important; /* subtle accent highlight */
+}
+

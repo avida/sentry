@@ -32,9 +32,6 @@ function App() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const signalingTemplate = useCameraIndexStore((s) => s.signalingTemplate);
-  const setSignalingTemplate = useCameraIndexStore((s) => s.setSignalingTemplate);
-
 
   const formatSignalingUrl = useCameraIndexStore((s) => s.cameraUrl);
 

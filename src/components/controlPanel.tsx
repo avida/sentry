@@ -23,7 +23,6 @@ const ControlPanel: React.FC<Props> = ({
   setRangeGate,
 }) => {
   const t = useI18nStore((s) => s.t);
-
   return (
     <section className="panel controls reveal-3">
       <h2>{t.controlSurface}</h2>
