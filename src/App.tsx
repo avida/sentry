@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  getInitialLocale,
-  locales,
-  type Locale,
-  type LockState,
-  translations,
-} from "./i18n";
+import { type LockState } from "./i18n";
+import { useI18nStore } from "./store/useI18nStore";
 import { Display } from "./components/display";
+import Telemetry from "./components/telemetry";
+import ControlPanel from "./components/controlPanel";
+import MissionProfile from "./components/missionProfile";
+import Logs from "./components/logs";
+import TopBar from "./components/topbar";
 import "./App.css";
 
 type SentryMode = "SAFE" | "MANUAL" | "AUTO";
 
 function App() {
-  const [locale, setLocale] = useState<Locale>(getInitialLocale);
+  const locale = useI18nStore((s) => s.locale);
+  const setLocale = useI18nStore((s) => s.setLocale);
   const [mode, setMode] = useState<SentryMode>("AUTO");
   const [armed, setArmed] = useState(false);
   const [autoTrack, setAutoTrack] = useState(true);
@@ -27,12 +28,7 @@ function App() {
     return () => window.clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    window.localStorage.setItem("ui-locale", locale);
-    document.documentElement.lang = locale;
-  }, [locale]);
-
-  const t = translations[locale];
+  
 
   const targetConfidence = useMemo(() => {
     const base = autoTrack ? 72 : 55;
@@ -56,76 +52,17 @@ function App() {
     <main className="battlefield-shell">
       <section className="scanlines" aria-hidden="true" />
 
-      <header className="topbar reveal-1">
-        <div>
-          <p className="label">{t.appLabel}</p>
-          <h1>{t.title}</h1>
-        </div>
-        <div className="topbar-meta">
-          <p>{t.callsign}</p>
-          <p>{clock.toLocaleTimeString(locale)}</p>
-          <label className="locale-control">
-            <span>{t.language}</span>
-            <select
-              value={locale}
-              onChange={(e) => setLocale(e.target.value as Locale)}
-              aria-label={t.language}
-            >
-              {locales.map((item) => (
-                <option key={item} value={item}>
-                  {item.toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </header>
+      <TopBar locale={locale} setLocale={setLocale} clock={clock} />
 
       <section className="grid reveal-2">
-        <aside className="panel mode-panel">
-          <h2>{t.missionProfile}</h2>
-          <p className="label">{t.engagementMode}</p>
-          <div className="mode-buttons">
-            {(["SAFE", "MANUAL", "AUTO"] as SentryMode[]).map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={item === mode ? "mode-btn active" : "mode-btn"}
-                onClick={() => setMode(item)}
-              >
-                {t.modeSelection[item]}
-              </button>
-            ))}
-          </div>
-
-          <div className="status-stack">
-            <div className="status-card">
-              <span>{t.weaponBus}</span>
-              <strong>{armed ? t.armed : t.standby}</strong>
-            </div>
-            <div className="status-card">
-              <span>{t.iffFilter}</span>
-              <strong>{autoTrack ? t.autoClassify : t.manualVerify}</strong>
-            </div>
-          </div>
-
-          <div className="toggle-row">
-            <button
-              type="button"
-              className="toggle"
-              onClick={() => setArmed((value) => !value)}
-            >
-              {armed ? t.disarm : t.arm}
-            </button>
-            <button
-              type="button"
-              className="toggle"
-              onClick={() => setAutoTrack((value) => !value)}
-            >
-              {autoTrack ? t.autoTrackOn : t.autoTrackOff}
-            </button>
-          </div>
-        </aside>
+        <MissionProfile
+          mode={mode}
+          setMode={setMode}
+          armed={armed}
+          setArmed={setArmed}
+          autoTrack={autoTrack}
+          setAutoTrack={setAutoTrack}
+        />
 
         <section className="panel hud-panel">
           <Display
@@ -136,96 +73,22 @@ function App() {
           />
         </section>
 
-        <aside className="panel telemetry-panel">
-          <h2>{t.telemetry}</h2>
-          <ul>
-            <li>
-              <span>{t.turretPan}</span>
-              <strong>
-                {pan} {t.units.degrees}
-              </strong>
-            </li>
-            <li>
-              <span>{t.turretTilt}</span>
-              <strong>
-                {tilt} {t.units.degrees}
-              </strong>
-            </li>
-            <li>
-              <span>{t.burstLength}</span>
-              <strong>
-                {burst} {t.units.darts}
-              </strong>
-            </li>
-            <li>
-              <span>{t.flywheelTemp}</span>
-              <strong>
-                {48 + burst} {t.units.celsius}
-              </strong>
-            </li>
-            <li>
-              <span>{t.batteryReserve}</span>
-              <strong>{armed ? "74%" : "96%"}</strong>
-            </li>
-          </ul>
-        </aside>
+        {/* Telemetry panel moved to its own component */}
+        <Telemetry pan={pan} tilt={tilt} burst={burst} armed={armed} />
       </section>
 
-      <section className="panel controls reveal-3">
-        <h2>{t.controlSurface}</h2>
-        <div className="sliders">
-          <label>
-            {t.panAxis}
-            <input
-              type="range"
-              min={-90}
-              max={90}
-              value={pan}
-              onChange={(e) => setPan(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            {t.tiltAxis}
-            <input
-              type="range"
-              min={-45}
-              max={45}
-              value={tilt}
-              onChange={(e) => setTilt(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            {t.burstLength}
-            <input
-              type="range"
-              min={1}
-              max={8}
-              value={burst}
-              onChange={(e) => setBurst(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            {t.rangeGate}
-            <input
-              type="range"
-              min={8}
-              max={40}
-              value={rangeGate}
-              onChange={(e) => setRangeGate(Number(e.target.value))}
-            />
-          </label>
-        </div>
-      </section>
+      <ControlPanel
+        pan={pan}
+        setPan={setPan}
+        tilt={tilt}
+        setTilt={setTilt}
+        burst={burst}
+        setBurst={setBurst}
+        rangeGate={rangeGate}
+        setRangeGate={setRangeGate}
+      />
 
-      <section className="panel logs reveal-4">
-        <h2>{t.eventLog}</h2>
-        <ul>
-          <li>15:21:41 - {t.logs[0]}</li>
-          <li>15:21:56 - {t.logs[1]}</li>
-          <li>15:22:03 - {t.logs[2]}</li>
-          <li>15:22:12 - {t.logs[3]}</li>
-        </ul>
-      </section>
+      <Logs />
     </main>
   );
 }
