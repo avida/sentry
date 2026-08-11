@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useI18nStore } from "../store/useI18nStore";
 
 const Logs: React.FC = () => {
   const t = useI18nStore((s) => s.t);
+
+  const logs = t.logs || [];
+
   return (
     <section className="panel logs reveal-4">
       <h2>{t.eventLog}</h2>
+      <p>Controller events are logged to the DevTools console.</p>
       <ul>
-        <li>15:21:41 - {t.logs[0]}</li>
-        <li>15:21:56 - {t.logs[1]}</li>
-        <li>15:22:03 - {t.logs[2]}</li>
-        <li>15:22:12 - {t.logs[3]}</li>
+        {logs.map((l, i) => (
+          <li key={i}>{l}</li>
+        ))}
       </ul>
     </section>
   );

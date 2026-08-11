@@ -41,7 +41,10 @@ function initController(): void {
   try {
     controller = new Controller();
     controller.on("data", (payload) => {
-      if (payload.parsed) console.log("Controller parsed:", payload.parsed);
+        // broadcast to renderer processes
+        BrowserWindow.getAllWindows().forEach((w) =>
+          w.webContents.send("controller-data", payload),
+        );
     });
     controller.on("connected", (info) =>
       console.log("Controller connected:", info),

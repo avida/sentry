@@ -8,6 +8,7 @@ import ControlPanel from "./components/controlPanel";
 import MissionProfile from "./components/missionProfile";
 import Logs from "./components/logs";
 import TopBar from "./components/topbar";
+import ControllerPanel from "./components/controller/ControllerPanel";
 import GridLayout, { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -69,6 +70,15 @@ function App() {
       y: 0,
       w: 6,
       h: 4,
+      moved: false,
+      static: true,
+    },
+    {
+      i: "controller-ui",
+      x: 3,
+      y: 4,
+      w: 6,
+      h: 2,
       moved: false,
       static: true,
     },
@@ -140,6 +150,10 @@ function App() {
             rangeGate={rangeGate}
             signalingUrl={formatSignalingUrl()}
           />
+        </div>
+
+        <div key="controller-ui" className="panel controller-ui">
+          <ControllerPanel />
         </div>
 
         <div key="telemetry" className="panel telemetry-panel">
