@@ -44,10 +44,8 @@ export const Display: React.FC<DisplayProps> = ({
         <div className="display-overlay">
           <div className="reticle-wrap overlay-reticle">
             <div className="reticle">
-              <div className="reticle-sweep" aria-hidden="true" />
               <div className="crosshair horizontal" aria-hidden="true" />
               <div className="crosshair vertical" aria-hidden="true" />
-              <div className="target-dot" aria-hidden="true" />
             </div>
           </div>
         </div>

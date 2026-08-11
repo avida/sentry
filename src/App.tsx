@@ -61,7 +61,7 @@ function App() {
       w: 3,
       h: 3,
       moved: false,
-      static: false,
+      static: true,
     },
     {
       i: "display",
@@ -70,7 +70,7 @@ function App() {
       w: 6,
       h: 4,
       moved: false,
-      static: false,
+      static: true,
     },
     {
       i: "telemetry",
@@ -79,7 +79,7 @@ function App() {
       w: 3,
       h: 3,
       moved: false,
-      static: false,
+      static: true,
     },
     {
       i: "control",
@@ -88,7 +88,7 @@ function App() {
       w: 3,
       h: 2,
       moved: false,
-      static: false,
+      static: true,
     },
     {
       i: "logs",
@@ -97,7 +97,7 @@ function App() {
       w: 3,
       h: 2,
       moved: false,
-      static: false,
+      static: true,
     },
   ];
 
