@@ -12,6 +12,7 @@ interface ReticleProps {
   className?: string;
   center?: ReticleCenter;
   acceleration?: number | MovementAxis;
+  deceleration?: number | MovementAxis;
   maxSpeed?: number;
   centerDeadZone?: number;
   updateInterval?: number;
@@ -22,7 +23,8 @@ const MAX_CONTROLLER_VALUE = 2047;
 export const Reticle: React.FC<ReticleProps> = ({
   className,
   center,
-  acceleration = { x: 0.08, y: 0.08 },
+  acceleration = { x: 0.03, y: 0.03 },
+  deceleration = { x: 0.08, y: 0.08 },
   maxSpeed = 2,
   centerDeadZone = 0.08,
   updateInterval = 16,
@@ -56,6 +58,7 @@ export const Reticle: React.FC<ReticleProps> = ({
     if (!movementRef.current) {
       movementRef.current = new MovementController({
         acceleration,
+        deceleration,
         maxSpeed,
         centerDeadZone,
         updateInterval,
@@ -64,7 +67,7 @@ export const Reticle: React.FC<ReticleProps> = ({
     }
 
     movementRef.current.setAxis(axis);
-  }, [acceleration, axis, centerDeadZone, maxSpeed, updateInterval]);
+  }, [acceleration, axis, centerDeadZone, deceleration, maxSpeed, updateInterval]);
 
   useEffect(() => {
     if (center) {

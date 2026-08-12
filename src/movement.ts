@@ -5,6 +5,7 @@ export type MovementAxis = {
 
 export interface MovementControllerOptions {
   acceleration?: number | MovementAxis;
+  deceleration?: number | MovementAxis;
   maxSpeed?: number;
   centerDeadZone?: number;
   updateInterval?: number;
@@ -13,6 +14,7 @@ export interface MovementControllerOptions {
 
 export class MovementController {
   private readonly acceleration: MovementAxis;
+  private readonly deceleration: MovementAxis;
   private readonly maxSpeed: number;
   private readonly centerDeadZone: number;
   private readonly updateInterval: number;
@@ -22,12 +24,14 @@ export class MovementController {
 
   constructor({
     acceleration = { x: 0.18, y: 0.18 },
+    deceleration = { x: 0.2, y: 0.2 },
     maxSpeed = 8,
     centerDeadZone = 0.08,
     updateInterval = 16,
     initialPosition = { x: 0, y: 0 },
   }: MovementControllerOptions = {}) {
     this.acceleration = normalizeAxis(acceleration, 0.18);
+    this.deceleration = normalizeAxis(deceleration, 0.2);
     this.maxSpeed = Math.max(0, maxSpeed);
     this.centerDeadZone = clamp(centerDeadZone, 0, 1);
     this.updateInterval = Math.max(1, updateInterval);
@@ -80,7 +84,7 @@ export class MovementController {
       return target;
     }
 
-    const ratio = this.acceleration[axis];
+    const ratio = target === 0 ? this.deceleration[axis] : this.acceleration[axis];
     const step = delta * ratio;
     return clamp(current + step, -this.maxSpeed, this.maxSpeed);
   }
