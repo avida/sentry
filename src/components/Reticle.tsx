@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { MovementController, type MovementAxis } from "../movement";
 import { useControllerStore } from "../store/useControllerStore";
 
 export interface ReticleCenter {
@@ -9,6 +10,10 @@ export interface ReticleCenter {
 interface ReticleProps {
   className?: string;
   center?: ReticleCenter;
+  acceleration?: number | MovementAxis;
+  maxSpeed?: number;
+  centerDeadZone?: number;
+  updateInterval?: number;
 }
 
 const MAX_CONTROLLER_VALUE = 2047;
@@ -16,28 +21,67 @@ const MAX_CONTROLLER_VALUE = 2047;
 export const Reticle: React.FC<ReticleProps> = ({
   className,
   center,
+  acceleration = { x: 0.08, y: 0.08 },
+  maxSpeed = 8,
+  centerDeadZone = 0.08,
+  updateInterval = 16,
 }) => {
   const controllerParsed = useControllerStore((s) => s.parsed);
+  const movementRef = useRef<MovementController | null>(null);
+  const [currentCenter, setCurrentCenter] = useState<ReticleCenter>({
+    x: 50,
+    y: 50,
+  });
 
-  const derivedCenter = useMemo(() => {
+  const axis = useMemo<MovementAxis>(() => {
     const buttons = controllerParsed.buttons ?? [];
     const horizontalValue =
-      buttons.find((button) => button.index === 1)?.value ?? 1023.5;
+      buttons.find((button) => button.index === 1)?.value ?? MAX_CONTROLLER_VALUE / 2;
     const verticalValue =
-      buttons.find((button) => button.index === 2)?.value ?? 1023.5;
+      buttons.find((button) => button.index === 2)?.value ?? MAX_CONTROLLER_VALUE / 2;
 
-    const toPercent = (value: number) => {
-      const clamped = Math.min(Math.max(value, 0), MAX_CONTROLLER_VALUE);
-      return (clamped / MAX_CONTROLLER_VALUE) * 100;
+    const normalize = (value: number) => {
+      const centered = value - MAX_CONTROLLER_VALUE / 2;
+      return clamp(centered / (MAX_CONTROLLER_VALUE / 2), -1, 1);
     };
 
     return {
-      x: toPercent(horizontalValue),
-      y: 100 - toPercent(verticalValue),
+      x: normalize(horizontalValue),
+      y: -normalize(verticalValue),
     };
   }, [controllerParsed]);
 
-  const resolvedCenter = center ?? derivedCenter;
+  useEffect(() => {
+    if (!movementRef.current) {
+      movementRef.current = new MovementController({
+        acceleration,
+        maxSpeed,
+        centerDeadZone,
+        updateInterval,
+        initialPosition: { x: 0, y: 0 },
+      });
+    }
+
+    movementRef.current.setAxis(axis);
+  }, [acceleration, axis, centerDeadZone, maxSpeed, updateInterval]);
+
+  useEffect(() => {
+    if (center) {
+      return;
+    }
+
+    const timerId = window.setInterval(() => {
+      const offset = movementRef.current?.update() ?? { x: 0, y: 0 };
+      setCurrentCenter({
+        x: 50 + offset.x,
+        y: 50 + offset.y,
+      });
+    }, updateInterval);
+
+    return () => window.clearInterval(timerId);
+  }, [center, updateInterval]);
+
+  const resolvedCenter = center ?? currentCenter;
   const { x = 50, y = 50 } = resolvedCenter;
 
   const reticleStyle = {
@@ -56,3 +100,6 @@ export const Reticle: React.FC<ReticleProps> = ({
     </div>
   );
 };
+
+const clamp = (value: number, min: number, max: number): number =>
+  Math.min(Math.max(value, min), max);
