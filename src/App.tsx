@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { type LockState } from "./i18n";
 import { useI18nStore } from "./store/useI18nStore";
 import { useCameraIndexStore } from "./store/useCameraIndexStore";
+import { useControllerStore } from "./store/useControllerStore";
 import { Display } from "./components/display";
 import Telemetry from "./components/telemetry";
 import ControlPanel from "./components/controlPanel";
@@ -19,6 +20,7 @@ type SentryMode = "SAFE" | "MANUAL" | "AUTO";
 function App() {
   const locale = useI18nStore((s) => s.locale);
   const setLocale = useI18nStore((s) => s.setLocale);
+  const setControllerParsed = useControllerStore((s) => s.setParsed);
   const [mode, setMode] = useState<SentryMode>("AUTO");
   const [armed, setArmed] = useState(false);
   const [autoTrack, setAutoTrack] = useState(true);
@@ -33,6 +35,22 @@ function App() {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (!(window as any).electronAPI?.onControllerData) {
+      return;
+    }
+
+    const remove = (window as any).electronAPI.onControllerData((data: any) => {
+      try {
+        const nextParsed = data?.parsed ?? data;
+        setControllerParsed(nextParsed);
+      } catch (e) {
+        console.warn("App: failed to parse controller data", e);
+      }
+    });
+
+    return () => remove();
+  }, [setControllerParsed]);
 
   const formatSignalingUrl = useCameraIndexStore((s) => s.cameraUrl);
 

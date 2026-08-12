@@ -1,43 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useI18nStore } from "../../store/useI18nStore";
-
-type ButtonState = {
-  index: number;
-  value: number;
-  pressed: boolean;
-};
-
-type Parsed = {
-  flags?: number;
-  flagsBits?: boolean[];
-  buttons?: ButtonState[];
-};
+import React from "react";
+import { useControllerStore } from "../../store/useControllerStore";
 
 const MAX_VAL = 2048; // 65535
 
 const ControllerPanel: React.FC = () => {
-  const t = useI18nStore((s) => s.t);
-  const [parsed, setParsed] = useState<Parsed>({ buttons: [] });
-
-  useEffect(() => {
-    if (
-      (window as any).electronAPI &&
-      (window as any).electronAPI.onControllerData
-    ) {
-      const remove = (window as any).electronAPI.onControllerData(
-        (data: any) => {
-          try {
-            const p = data?.parsed ?? data;
-            setParsed(p || { buttons: [] });
-          } catch (e) {
-            console.warn("ControllerPanel: failed to parse controller data", e);
-          }
-        },
-      );
-      return () => remove();
-    }
-    return;
-  }, []);
+  const parsed = useControllerStore((s) => s.parsed);
 
   const buttons = parsed.buttons ?? [];
   const filteredButtons = buttons.filter((b) => b.index >= 1 && b.index <= 5);
