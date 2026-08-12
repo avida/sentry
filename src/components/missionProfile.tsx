@@ -99,7 +99,7 @@ const MissionProfile: React.FC<Props> = ({
           onChange={(e) => setCameraIndex(Number(e.target.value))}
           className={styles.cameraSelect}
         >
-          {(t.cameraOptions ?? ["1", "2", "3", "4"]).map((label, i) => (
+          {t.cameraOptions .map((label, i) => (
             <MenuItem key={i} value={i + 1}>
               {label}
             </MenuItem>

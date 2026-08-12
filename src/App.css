@@ -239,13 +239,13 @@ h2 {
 .crosshair.horizontal {
   width: 100%;
   height: 1px;
-  top: 50%;
+  top: var(--reticle-center-y, 50%);
 }
 
 .crosshair.vertical {
   width: 1px;
   height: 100%;
-  left: 50%;
+  left: var(--reticle-center-x, 50%);
 }
 
 .target-dot {

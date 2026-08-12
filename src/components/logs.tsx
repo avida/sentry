@@ -9,7 +9,6 @@ const Logs: React.FC = () => {
   return (
     <section className="panel logs reveal-4">
       <h2>{t.eventLog}</h2>
-      <p>Controller events are logged to the DevTools console.</p>
       <ul>
         {logs.map((l, i) => (
           <li key={i}>{l}</li>
