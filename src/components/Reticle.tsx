@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MovementController, type MovementAxis } from "../movement";
 import { useControllerStore } from "../store/useControllerStore";
+import "./Reticle.css";
 
 export interface ReticleCenter {
   x?: number;
@@ -22,7 +23,7 @@ export const Reticle: React.FC<ReticleProps> = ({
   className,
   center,
   acceleration = { x: 0.08, y: 0.08 },
-  maxSpeed = 8,
+  maxSpeed = 2,
   centerDeadZone = 0.08,
   updateInterval = 16,
 }) => {

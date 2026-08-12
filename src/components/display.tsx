@@ -12,7 +12,6 @@ interface DisplayProps {
   lockState: LockState;
   targetConfidence: number;
   rangeGate: number;
-  reticleCenter?: ReticleCenter;
   /**
    * Optional WebSocket signaling URL for establishing a WebRTC session.
    * Expected server flow: client sends {type: 'watch'}; server sends {type: 'offer', offer};
@@ -26,7 +25,6 @@ export const Display: React.FC<DisplayProps> = ({
   targetConfidence,
   rangeGate,
   signalingUrl,
-  reticleCenter,
 }) => {
   const [locale] = useState<Locale>(getInitialLocale);
   const t = translations[locale];
@@ -46,7 +44,7 @@ export const Display: React.FC<DisplayProps> = ({
         {/* Overlay: HUD elements placed over the video */}
         <div className="display-overlay">
           <div className="reticle-wrap overlay-reticle">
-            <Reticle center={reticleCenter} />
+            <Reticle />
           </div>
         </div>
       </div>
