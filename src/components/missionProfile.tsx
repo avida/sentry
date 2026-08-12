@@ -35,7 +35,7 @@ const MissionProfile: React.FC<Props> = ({
       <h2>{t.missionProfile}</h2>
       <p className="label">{t.engagementMode}</p>
       <div className="mode-buttons">
-        {(["SAFE", "MANUAL", "AUTO"] as SentryMode[]).map((item) => (
+        {(["MANUAL", "AUTO"] as SentryMode[]).map((item) => (
           <button
             key={item}
             type="button"

@@ -72,60 +72,62 @@ function App() {
         ? "TRACKING"
         : "SCANNING";
 
+  const ITEM_STATIC = true;
+  const ITEM_MOVED = true;
   const layout: Layout = [
     {
       i: "mission",
       x: 0,
       y: 0,
-      w: 3,
+      w: 2,
       h: 3,
-      moved: false,
-      static: true,
+      moved: ITEM_MOVED,
+      static: ITEM_STATIC,
     },
     {
       i: "display",
-      x: 3,
+      x: 2,
       y: 0,
-      w: 6,
-      h: 4,
-      moved: false,
-      static: true,
+      w: 8,
+      h: 5,
+      moved: ITEM_MOVED,
+      static: ITEM_STATIC,
     },
     {
       i: "controller-ui",
-      x: 3,
+      x: 0,
       y: 4,
-      w: 6,
+      w: 2,
       h: 2,
-      moved: false,
-      static: true,
+      moved: ITEM_MOVED,
+      static: ITEM_STATIC,
     },
     {
       i: "telemetry",
-      x: 9,
+      x: 11,
       y: 0,
-      w: 3,
+      w: 2,
       h: 3,
-      moved: false,
-      static: true,
+      moved: ITEM_MOVED,
+      static: ITEM_STATIC,
     },
     {
       i: "control",
       x: 0,
       y: 3,
-      w: 3,
+      w: 2,
       h: 2,
-      moved: false,
-      static: true,
+      moved: ITEM_MOVED,
+      static: ITEM_STATIC,
     },
     {
       i: "logs",
-      x: 9,
+      x: 11,
       y: 3,
-      w: 3,
+      w: 2,
       h: 2,
-      moved: false,
-      static: true,
+      moved: ITEM_MOVED,
+      static: ITEM_STATIC,
     },
   ];
 
@@ -170,9 +172,9 @@ function App() {
           />
         </div>
 
-        <div key="controller-ui" className="panel controller-ui">
+        {/* <div key="controller-ui" className="panel controller-ui">
           <ControllerPanel />
-        </div>
+        </div> */}
 
         <div key="telemetry" className="panel telemetry-panel">
           <Telemetry pan={pan} tilt={tilt} burst={burst} armed={armed} />
