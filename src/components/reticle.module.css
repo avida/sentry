@@ -1,0 +1,114 @@
+.reticleWrap {
+  border: 1px solid rgba(165, 176, 135, 0.55);
+  border-radius: 6px;
+  padding: 0.5rem;
+  background: radial-gradient(circle at center, rgba(179, 187, 122, 0.16), rgba(17, 20, 15, 0.12));
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.reticle {
+  position: relative;
+  height: 100%;
+  min-height: 160px;
+  border: 1px solid rgba(205, 209, 155, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  --reticle-gap: 16px;
+  --reticle-line-color: rgba(90, 220, 120, 0.55);
+}
+
+.reticleSweep {
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(from 90deg, transparent 0 84%, rgba(208, 177, 116, 0.35) 90%, transparent 95%);
+}
+
+.reticleCircle {
+  position: absolute;
+  top: var(--reticle-center-y, 50%);
+  left: var(--reticle-center-x, 50%);
+  width: min(35%, 35vh);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(90, 220, 120, 0.25);
+  border-radius: 50%;
+}
+
+.reticlePost {
+  position: absolute;
+  background: var(--reticle-line-color);
+}
+
+.reticlePost::after {
+  content: "";
+  position: absolute;
+  background-repeat: repeat;
+}
+
+.postLeft,
+.postRight {
+  top: var(--reticle-center-y, 50%);
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.postLeft::after,
+.postRight::after {
+  inset: -4px 0;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--reticle-line-color) 0 2px,
+    transparent 2px 20px
+  );
+}
+
+.postLeft {
+  left: 0;
+  width: calc(var(--reticle-center-x, 50%) - var(--reticle-gap));
+}
+
+.postRight {
+  left: calc(var(--reticle-center-x, 50%) + var(--reticle-gap));
+  width: calc(100% - var(--reticle-center-x, 50%) - var(--reticle-gap));
+}
+
+.postTop,
+.postBottom {
+  left: var(--reticle-center-x, 50%);
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+.postTop::after,
+.postBottom::after {
+  inset: 0 -4px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--reticle-line-color) 0 2px,
+    transparent 2px 20px
+  );
+}
+
+.postTop {
+  top: 0;
+  height: calc(var(--reticle-center-y, 50%) - var(--reticle-gap));
+}
+
+.postBottom {
+  top: calc(var(--reticle-center-y, 50%) + var(--reticle-gap));
+  height: calc(100% - var(--reticle-center-y, 50%) - var(--reticle-gap));
+}
+
+.reticleCenterDot {
+  position: absolute;
+  top: var(--reticle-center-y, 50%);
+  left: var(--reticle-center-x, 50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--reticle-line-color);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 4px rgba(205, 216, 168, 0.6);
+}

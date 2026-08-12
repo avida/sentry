@@ -95,8 +95,12 @@ export const Reticle: React.FC<ReticleProps> = ({
       style={reticleStyle}
       aria-label="Target reticle"
     >
-      <div className="crosshair horizontal" aria-hidden="true" />
-      <div className="crosshair vertical" aria-hidden="true" />
+      <div className="reticle-circle" aria-hidden="true" />
+      <div className="reticle-post post-left" aria-hidden="true" />
+      <div className="reticle-post post-right" aria-hidden="true" />
+      <div className="reticle-post post-top" aria-hidden="true" />
+      <div className="reticle-post post-bottom" aria-hidden="true" />
+      <div className="reticle-center-dot" aria-hidden="true" />
     </div>
   );
 };
