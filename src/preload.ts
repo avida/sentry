@@ -3,9 +3,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
-	createHFile: async () => {
-		return ipcRenderer.invoke('create-h-file');
-	},
 
 	onControllerData: (cb: (data: any) => void) => {
 		const handler = (_: any, data: any) => cb(data);

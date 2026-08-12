@@ -65,15 +65,6 @@ const MissionProfile: React.FC<Props> = ({
           onClick={() =>
             setArmed((value: boolean) => {
               const next = !value;
-              if (next) {
-                try {
-                  (window as Window & {
-                    electronAPI?: { createHFile?: () => void };
-                  }).electronAPI?.createHFile?.();
-                } catch (e) {
-                  console.error("createHFile IPC failed", e);
-                }
-              }
               return next;
             })
           }
