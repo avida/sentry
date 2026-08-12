@@ -68,7 +68,7 @@ export const translations = {
       AUTO: "Автоматичний",
     },
     appLabel: "Програма захисту Nerf",
-    title: "ІНТЕРФЕЙС КОНТРОЛЮ АВТОМАТИЧНОГО СПОСТЕРЕЖЕННЯ",
+    title: "ІНТЕРФЕЙС КОНТРОЛЮ АВТОМАТИЧНОЇ ТУРЕЛІ",
     callsign: "ПОЗИВНИЙ: ZAF-007",
     missionProfile: "Профіль місії",
     engagementMode: "Режим ураження",
