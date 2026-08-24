@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import HID from "node-hid";
 import { HIDParser } from "./hid-parser";
 
-export class Controller extends EventEmitter {
+export class HIDController extends EventEmitter {
   options: any;
   parser: any;
   device: any | null;
@@ -41,8 +41,8 @@ export class Controller extends EventEmitter {
   }
 
   async discoverAndConnect(): Promise<any> {
-    const devices = Controller.listDevices();
-    const dev = Controller.findControllerDevice(devices);
+    const devices = HIDController.listDevices();
+    const dev = HIDController.findControllerDevice(devices);
     if (!dev) throw new Error("No HID controller device found");
     this.deviceInfo = dev;
     const path = dev.path || dev.devicePath || (dev as any).pathName;
@@ -96,4 +96,4 @@ export class Controller extends EventEmitter {
   }
 }
 
-export default Controller;
+export default HIDController;

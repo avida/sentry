@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MovementController, type MovementAxis } from "../movement";
-import { useControllerStore } from "../store/useControllerStore";
+import { useHIDControllerStore } from "../store/useHIDControllerStore";
 import "./Reticle.css";
 
 export interface ReticleCenter {
@@ -29,7 +29,7 @@ export const Reticle: React.FC<ReticleProps> = ({
   centerDeadZone = 0.08,
   updateInterval = 16,
 }) => {
-  const controllerParsed = useControllerStore((s) => s.parsed);
+  const controllerParsed = useHIDControllerStore((s) => s.parsed);
   const movementRef = useRef<MovementController | null>(null);
   const [currentCenter, setCurrentCenter] = useState<ReticleCenter>({
     x: 50,

@@ -1,10 +1,10 @@
 import React from "react";
-import { useControllerStore } from "../../store/useControllerStore";
+import { useHIDControllerStore } from "../../store/useHIDControllerStore";
 
 const MAX_VAL = 2048; // 65535
 
 const ControllerPanel: React.FC = () => {
-  const parsed = useControllerStore((s) => s.parsed);
+  const parsed = useHIDControllerStore((s) => s.parsed);
 
   const buttons = parsed.buttons ?? [];
   const filteredButtons = buttons.filter((b) => b.index >= 1 && b.index <= 5);

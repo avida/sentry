@@ -36,10 +36,10 @@ const normalizeParsedControllerData = (
   };
 };
 
-export const useControllerStore = create<ControllerState>((set) => ({
+export const useHIDControllerStore = create<ControllerState>((set) => ({
   parsed: { buttons: [] },
   setParsed: (parsed) => set({ parsed: normalizeParsedControllerData(parsed) }),
   clear: () => set({ parsed: { buttons: [] } }),
 }));
 
-export default useControllerStore;
+export default useHIDControllerStore;

@@ -11,4 +11,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 			ipcRenderer.removeListener('controller-data', handler);
 		};
 	},
+
+	sendShift: (a: number, b: number, c: number) => {
+		return ipcRenderer.invoke('serial-sendShift', a, b, c);
+ 	},
 });
