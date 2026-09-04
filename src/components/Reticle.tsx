@@ -37,9 +37,15 @@ export const Reticle: React.FC<ReticleProps> = ({
   };
   const { x = 50, y = 50 } = resolvedCenter;
 
+  const baseScreenX = 50;
+  const baseScreenY = 50 + (BASE_HEIGHT / POINT_HALF_RANGE) * 30;
+
   const reticleStyle = {
     ["--reticle-center-x" as string]: `${x}%`,
     ["--reticle-center-y" as string]: `${y}%`,
+    ["--reticle-base-width" as string]: `${BASE_LENGTH}px`,
+    ["--reticle-base-screen-x" as string]: `${baseScreenX}%`,
+    ["--reticle-base-screen-y" as string]: `${baseScreenY}%`,
   } as React.CSSProperties;
 
   return (
@@ -48,6 +54,7 @@ export const Reticle: React.FC<ReticleProps> = ({
       style={reticleStyle}
       aria-label="Target reticle"
     >
+      <div className="reticle-base" aria-hidden="true" />
       <div className="reticle-circle" aria-hidden="true" />
       <div className="reticle-post post-left" aria-hidden="true" />
       <div className="reticle-post post-right" aria-hidden="true" />

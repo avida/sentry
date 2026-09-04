@@ -9,6 +9,19 @@
   --reticle-gap: 16px;
   --reticle-line-color: rgba(66, 231, 105, 0.55);
 }
+
+.reticle-base {
+  position: absolute;
+  left: var(--reticle-base-screen-x, 50%);
+  top: var(--reticle-base-screen-y, 60%);
+  width: var(--reticle-base-width, 300px);
+  height: 4px;
+  transform: translateX(-50%);
+  background: rgba(12, 90, 44, 0.9);
+  box-shadow: 0 0 6px rgba(12, 90, 44, 0.45);
+  pointer-events: none;
+}
+
 .reticle-center-dot {
   position: absolute;
   top: var(--reticle-center-y, 50%);
@@ -20,6 +33,7 @@
   transform: translate(-50%, -50%);
   box-shadow: 0 0 4px rgba(205, 216, 168, 0.6);
 }
+
 .reticle-wrap {
   border: 1px solid rgba(165, 176, 135, 0.55);
   border-radius: 6px;
