@@ -37,8 +37,12 @@ export const Reticle: React.FC<ReticleProps> = ({
   };
   const { x = 50, y = 50 } = resolvedCenter;
 
-  const baseScreenX = 50;
-  const baseScreenY = 50 + (BASE_HEIGHT / POINT_HALF_RANGE) * 30;
+  const baseScreenX = 500;
+  const baseScreenY = 500 + (BASE_HEIGHT / POINT_HALF_RANGE) * 300;
+  const baseLeftX = baseScreenX - BASE_LENGTH / 2;
+  const baseRightX = baseScreenX + BASE_LENGTH / 2;
+  const centerX = (x / 100) * 1000;
+  const centerY = (y / 100) * 1000;
 
   const reticleStyle = {
     ["--reticle-center-x" as string]: `${x}%`,
@@ -54,7 +58,32 @@ export const Reticle: React.FC<ReticleProps> = ({
       style={reticleStyle}
       aria-label="Target reticle"
     >
-      <div className="reticle-base" aria-hidden="true" />
+      <svg className="reticle-guides" aria-hidden="true" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <line
+          x1={baseLeftX}
+          y1={baseScreenY}
+          x2={baseRightX}
+          y2={baseScreenY}
+          stroke="rgba(12, 90, 44, 0.9)"
+          strokeWidth="6"
+        />
+        <line
+          x1={baseLeftX}
+          y1={baseScreenY}
+          x2={centerX}
+          y2={centerY}
+          stroke="rgba(255, 140, 0, 0.9)"
+          strokeWidth="4"
+        />
+        <line
+          x1={baseRightX}
+          y1={baseScreenY}
+          x2={centerX}
+          y2={centerY}
+          stroke="rgba(59, 130, 246, 0.9)"
+          strokeWidth="4"
+        />
+      </svg>
       <div className="reticle-circle" aria-hidden="true" />
       <div className="reticle-post post-left" aria-hidden="true" />
       <div className="reticle-post post-right" aria-hidden="true" />
@@ -72,12 +101,12 @@ export const Reticle: React.FC<ReticleProps> = ({
           <strong>{pointCoordinates.y.toFixed(1)}</strong>
         </div>
         <div className="reticle-motor-row">
-          <span>Left</span>
-          <strong>{motorState.currentMotorPosition.left.toFixed(1)}</strong>
+          <span className="motor-label motor-left">Left</span>
+          <strong className="motor-value motor-left-value">{motorState.currentMotorPosition.left.toFixed(1)}</strong>
         </div>
         <div className="reticle-motor-row">
-          <span>Right</span>
-          <strong>{motorState.currentMotorPosition.right.toFixed(1)}</strong>
+          <span className="motor-label motor-right">Right</span>
+          <strong className="motor-value motor-right-value">{motorState.currentMotorPosition.right.toFixed(1)}</strong>
         </div>
         <div className="reticle-motor-row status-row">
           <span>Status</span>
