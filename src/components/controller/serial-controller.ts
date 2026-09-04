@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 const { SerialPort } = require("serialport");
 const { ReadlineParser } = require("@serialport/parser-readline");
-const POSITION_POLL_INTERVAL_MS = 500;
+const POSITION_POLL_INTERVAL_MS = 200;
 
 export class SerialController extends EventEmitter {
   portPath: string;
@@ -106,27 +106,6 @@ export class SerialController extends EventEmitter {
     }
   }
 
-  // sendShift: send a single signed integer in range -255..255 using format:
-  // [0] = 1 (command byte), [1] = low byte, [2] = high byte (little-endian)
-  sendShift(value: number): void {
-    if (!this.port) return;
-    try {
-      let n = Number(value) || 0;
-      n = Math.trunc(n);
-      if (n > 255) n = 255;
-      if (n < -255) n = -255;
-
-      // represent as signed 16-bit (two's complement) and send low byte first
-      const int16 = n & 0xffff;
-      const low = int16 & 0xff;
-      const high = (int16 >> 8) & 0xff;
-
-      const buf = Buffer.from([1, low, high]);
-      this.port.write(buf);
-    } catch (e) {
-      this.emit("error", e);
-    }
-  }
   setMotorPositionFromPoint(leftLength: number, rightLength: number) {
     const message = Buffer.alloc(5);
     message[0] = 1;

@@ -3,6 +3,7 @@ import { type LockState } from "./i18n";
 import { useI18nStore } from "./store/useI18nStore";
 import { useCameraIndexStore } from "./store/useCameraIndexStore";
 import { useHIDControllerStore } from "./store/useHIDControllerStore";
+import { useSerialMotorStore } from "./store/useSerialMotorStore";
 import { Display } from "./components/display";
 import Telemetry from "./components/telemetry";
 import ControlPanel from "./components/controlPanel";
@@ -20,7 +21,8 @@ type SentryMode = "SAFE" | "MANUAL" | "AUTO";
 function App() {
   const locale = useI18nStore((s) => s.locale);
   const setLocale = useI18nStore((s) => s.setLocale);
-  const setControllerParsed = useHIDControllerStore((s) => s.setParsed);
+  const setControllerData = useHIDControllerStore((s) => s.setControllerData);
+  const setMotorState = useSerialMotorStore((s) => s.setMotorState);
   const [mode, setMode] = useState<SentryMode>("AUTO");
   const [armed, setArmed] = useState(false);
   const [autoTrack, setAutoTrack] = useState(true);
@@ -42,15 +44,30 @@ function App() {
 
     const remove = (window as any).electronAPI.onControllerData((data: any) => {
       try {
-        const nextParsed = data?.parsed ?? data;
-        setControllerParsed(nextParsed);
+        setControllerData(data);
       } catch (e) {
         console.warn("App: failed to parse controller data", e);
       }
     });
 
     return () => remove();
-  }, [setControllerParsed]);
+  }, [setControllerData]);
+
+  useEffect(() => {
+    if (!(window as any).electronAPI?.onSerialData) {
+      return;
+    }
+
+    const remove = (window as any).electronAPI.onSerialData((data: any) => {
+      try {
+        setMotorState(data);
+      } catch (e) {
+        console.warn("App: failed to parse serial motor data", e);
+      }
+    });
+
+    return () => remove();
+  }, [setMotorState]);
 
   const formatSignalingUrl = useCameraIndexStore((s) => s.cameraUrl);
 

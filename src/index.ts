@@ -12,19 +12,6 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
-// IPC handler to allow renderer to call serial sendShift
-ipcMain.handle('serial-sendShift', async (_event, value: number) => {
-  try {
-    if (serialController) {
-      serialController.sendShift(Number(value) || 0);
-      return { ok: true };
-    }
-    return { ok: false, error: 'no-serial-controller' };
-  } catch (err) {
-    console.error('sendShift error', err);
-    return { ok: false, error: String(err) };
-  }
-});
 
 const createWindow = (): void => {
   // Create the browser window.
@@ -43,7 +30,7 @@ const createWindow = (): void => {
   mainWindow.maximize();
 
   // Open the DevTools in a detached (floating) window.
-  // mainWindow.webContents.openDevTools({ mode: 'detach' });
+  mainWindow.webContents.openDevTools({ mode: 'detach' });
 };
 
 // This method will be called when Electron has finished
@@ -71,6 +58,12 @@ function initController(): void {
     console.error("initController failed:", err);
   }
 }
+
+serialController.on("data", (payload) => {
+  BrowserWindow.getAllWindows().forEach((w) =>
+    w.webContents.send("serial-data", payload),
+  );
+});
 
 app.on("ready", () => {
   createWindow();

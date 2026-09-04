@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MovementController, type MovementAxis } from "../movement";
+import React from "react";
 import { useHIDControllerStore } from "../store/useHIDControllerStore";
+import { useSerialMotorStore } from "../store/useSerialMotorStore";
 import "./Reticle.css";
 
 export interface ReticleCenter {
@@ -11,90 +11,30 @@ export interface ReticleCenter {
 interface ReticleProps {
   className?: string;
   center?: ReticleCenter;
-  acceleration?: number | MovementAxis;
-  deceleration?: number | MovementAxis;
-  maxSpeed?: number;
-  centerDeadZone?: number;
-  updateInterval?: number;
 }
+const BASE_LENGTH = 300;
+const BASE_HEIGHT = 100;
 
-const MAX_CONTROLLER_VALUE = 2047;
+const POINT_HALF_RANGE = 150;
 
 export const Reticle: React.FC<ReticleProps> = ({
   className,
   center,
-  acceleration = { x: 0.03, y: 0.03 },
-  deceleration = { x: 0.08, y: 0.08 },
-  maxSpeed = 0.2,
-  centerDeadZone = 0.08,
-  updateInterval = 16,
 }) => {
-  const controllerParsed = useHIDControllerStore((s) => s.parsed);
-  const movementRef = useRef<MovementController | null>(null);
-  const [currentCenter, setCurrentCenter] = useState<ReticleCenter>({
-    x: 50,
-    y: 50,
-  });
-
-  const axis = useMemo<MovementAxis>(() => {
-    const buttons = controllerParsed.buttons ?? [];
-    const horizontalValue =
-      buttons.find((button) => button.index === 1)?.value ?? MAX_CONTROLLER_VALUE / 2;
-    const verticalValue =
-      buttons.find((button) => button.index === 2)?.value ?? MAX_CONTROLLER_VALUE / 2;
-
-    const normalize = (value: number) => {
-      const centered = value - MAX_CONTROLLER_VALUE / 2;
-      return clamp(centered / (MAX_CONTROLLER_VALUE / 2), -1, 1);
-    };
-
-    return {
-      x: normalize(horizontalValue),
-      y: -normalize(verticalValue),
-    };
-  }, [controllerParsed]);
-
-  useEffect(() => {
-    if (!movementRef.current) {
-      movementRef.current = new MovementController({
-        acceleration,
-        deceleration,
-        maxSpeed,
-        centerDeadZone,
-        updateInterval,
-        initialPosition: { x: 0, y: 0 },
-        onSendShift: (mappedY: number) => {
-          try {
-            (window as any).electronAPI?.sendShift(mappedY).catch((e: any) => {
-              console.error('sendShift failed', e);
-            });
-          } catch (e) {
-            console.error('Failed to invoke sendShift:', e);
-          }
-        },
-      });
-    }
-
-    movementRef.current.setAxis(axis);
-  }, [acceleration, axis, centerDeadZone, deceleration, maxSpeed, updateInterval]);
-
-  useEffect(() => {
-    if (center) {
-      return;
-    }
-
-    const timerId = window.setInterval(() => {
-      const offset = movementRef.current?.update() ?? { x: 0, y: 0 };
-      setCurrentCenter({
-        x: 50 + offset.x,
-        y: 50 + offset.y,
-      });
-    }, updateInterval);
-
-    return () => window.clearInterval(timerId);
-  }, [center, updateInterval]);
-
-  const resolvedCenter = center ?? currentCenter;
+  const pointCoordinates = useHIDControllerStore((s) => s.pointCoordinates);
+  const motorState = useSerialMotorStore((s) => s);
+  const resolvedCenter = center ?? {
+    x:
+      50 +
+      (clamp(pointCoordinates.x, -POINT_HALF_RANGE, POINT_HALF_RANGE) /
+        POINT_HALF_RANGE) *
+        50,
+    y:
+      50 -
+      (clamp(pointCoordinates.y, -POINT_HALF_RANGE, POINT_HALF_RANGE) /
+        POINT_HALF_RANGE) *
+        50,
+  };
   const { x = 50, y = 50 } = resolvedCenter;
 
   const reticleStyle = {
@@ -114,6 +54,29 @@ export const Reticle: React.FC<ReticleProps> = ({
       <div className="reticle-post post-top" aria-hidden="true" />
       <div className="reticle-post post-bottom" aria-hidden="true" />
       <div className="reticle-center-dot" aria-hidden="true" />
+
+      <div className="reticle-motor-overlay" aria-live="polite">
+        <div className="reticle-motor-row">
+          <span>X</span>
+          <strong>{pointCoordinates.x.toFixed(1)}</strong>
+        </div>
+        <div className="reticle-motor-row">
+          <span>Y</span>
+          <strong>{pointCoordinates.y.toFixed(1)}</strong>
+        </div>
+        <div className="reticle-motor-row">
+          <span>Left</span>
+          <strong>{motorState.currentMotorPosition.left.toFixed(1)}</strong>
+        </div>
+        <div className="reticle-motor-row">
+          <span>Right</span>
+          <strong>{motorState.currentMotorPosition.right.toFixed(1)}</strong>
+        </div>
+        <div className="reticle-motor-row status-row">
+          <span>Status</span>
+          <strong>{motorState.status}</strong>
+        </div>
+      </div>
     </div>
   );
 };
