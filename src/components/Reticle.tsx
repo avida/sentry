@@ -25,7 +25,7 @@ export const Reticle: React.FC<ReticleProps> = ({
   center,
   acceleration = { x: 0.03, y: 0.03 },
   deceleration = { x: 0.08, y: 0.08 },
-  maxSpeed = 2,
+  maxSpeed = 0.2,
   centerDeadZone = 0.08,
   updateInterval = 16,
 }) => {
@@ -63,6 +63,15 @@ export const Reticle: React.FC<ReticleProps> = ({
         centerDeadZone,
         updateInterval,
         initialPosition: { x: 0, y: 0 },
+        onSendShift: (mappedY: number) => {
+          try {
+            (window as any).electronAPI?.sendShift(mappedY).catch((e: any) => {
+              console.error('sendShift failed', e);
+            });
+          } catch (e) {
+            console.error('Failed to invoke sendShift:', e);
+          }
+        },
       });
     }
 

@@ -13,10 +13,10 @@ if (require("electron-squirrel-startup")) {
 }
 
 // IPC handler to allow renderer to call serial sendShift
-ipcMain.handle('serial-sendShift', async (_event, a: number, b: number, c: number) => {
+ipcMain.handle('serial-sendShift', async (_event, value: number) => {
   try {
     if (serialController) {
-      serialController.sendShift(Number(a) || 0, Number(b) || 0, Number(c) || 0);
+      serialController.sendShift(Number(value) || 0);
       return { ok: true };
     }
     return { ok: false, error: 'no-serial-controller' };

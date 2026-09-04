@@ -10,6 +10,8 @@ export interface MovementControllerOptions {
   centerDeadZone?: number;
   updateInterval?: number;
   initialPosition?: MovementAxis;
+  // optional callback invoked when vertical movement produces a new value to send
+  onSendShift?: (value: number) => void;
 }
 
 export class MovementController {
@@ -21,6 +23,8 @@ export class MovementController {
   private position: MovementAxis;
   private velocity: MovementAxis;
   private axis: MovementAxis;
+  private onSendShift?: (value: number) => void;
+  private _prevSendY: number | null = null;
 
   constructor({
     acceleration = { x: 0.18, y: 0.18 },
@@ -29,6 +33,7 @@ export class MovementController {
     centerDeadZone = 0.08,
     updateInterval = 16,
     initialPosition = { x: 0, y: 0 },
+  onSendShift,
   }: MovementControllerOptions = {}) {
     this.acceleration = normalizeAxis(acceleration, 0.18);
     this.deceleration = normalizeAxis(deceleration, 0.2);
@@ -38,6 +43,7 @@ export class MovementController {
     this.position = { ...initialPosition };
     this.velocity = { x: 0, y: 0 };
     this.axis = { x: 0, y: 0 };
+    this.onSendShift = onSendShift;
   }
 
   public setAxis(axis: MovementAxis): void {
@@ -57,8 +63,23 @@ export class MovementController {
     this.velocity.x = this.easeToward("x", this.velocity.x, targetVelocity.x);
     this.velocity.y = this.easeToward("y", this.velocity.y, targetVelocity.y);
 
+    const y_change = this.velocity.y * dtFactor;
     this.position.x = clamp(this.position.x + this.velocity.x * dtFactor, -50, 50);
-    this.position.y = clamp(this.position.y + this.velocity.y * dtFactor, -50, 50);
+    this.position.y = clamp(this.position.y + y_change, -50, 50);
+    // If a send callback is configured, map vertical position (-50..50) to -255..255
+    if (typeof this.onSendShift === 'function') {
+      try {
+        const y_change_norm = - y_change * 500;
+        let mapped = Math.round((y_change_norm / 50) * 255);
+        if (mapped > 255) mapped = 255;
+        if (mapped < -255) mapped = -255;
+        if (this._prevSendY === null || mapped !== this._prevSendY) {
+          this.onSendShift(mapped);
+        }
+      } catch (e) {
+        // swallow errors from send callback
+      }
+    }
 
     return { ...this.position };
   }

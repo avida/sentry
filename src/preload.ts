@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 		};
 	},
 
-	sendShift: (a: number, b: number, c: number) => {
-		return ipcRenderer.invoke('serial-sendShift', a, b, c);
- 	},
+	sendShift: (value: number) => {
+		return ipcRenderer.invoke('serial-sendShift', value);
+	},
 });

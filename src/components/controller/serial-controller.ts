@@ -8,6 +8,8 @@ export class SerialController extends EventEmitter {
   options: any;
   port: any | null;
   parser: any | null;
+  currentMotorPosition: { left: number; right: number };
+  pointCoordinates: { x: number; y: number };
 
   constructor(portPath = "/dev/ttyUSB0", options: any = { baudRate: 115200 }) {
     super();
@@ -15,6 +17,31 @@ export class SerialController extends EventEmitter {
     this.options = options;
     this.port = null;
     this.parser = null;
+    this.currentMotorPosition = { left: 0, right: 0 };
+    this.pointCoordinates = { x: 0, y: 0 };
+  }
+
+  updateCurrentPositionFromText(text: string): boolean {
+    const pairMatch = String(text).match(
+      /-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?/,
+    );
+    if (pairMatch) {
+      const [x, y] = pairMatch[0].split(",").map((part) => Number(part.trim()));
+
+      this.currentMotorPosition = {
+        left: x,
+        right: y,
+      };
+      return true;
+    }
+    return false;
+  }
+  broadcastState() {
+    const payload = JSON.stringify({
+      currentMotorPosition: this.currentMotorPosition,
+      status: this.currentMotorPosition === null ? "waiting" : "ok",
+    });
+    this.emit("data", payload);
   }
 
   async connect(): Promise<void> {
@@ -37,7 +64,11 @@ export class SerialController extends EventEmitter {
     this.parser.on("data", (line: any) => {
       const text = String(line).trim();
       if (text) {
-        console.log(`[serial]: ${text}`);
+        if (this.updateCurrentPositionFromText(text)) {
+          this.broadcastState();
+        } else {
+          console.log(`[serial]: ${text}`);
+        }
       }
     });
 
@@ -75,15 +106,36 @@ export class SerialController extends EventEmitter {
     }
   }
 
-  // sendShift: send three bytes to the serial device (as numbers 0-255)
-  sendShift(a: number, b: number, c: number): void {
+  // sendShift: send a single signed integer in range -255..255 using format:
+  // [0] = 1 (command byte), [1] = low byte, [2] = high byte (little-endian)
+  sendShift(value: number): void {
     if (!this.port) return;
     try {
-      const buf = Buffer.from([a & 0xff, b & 0xff, c & 0xff]);
+      let n = Number(value) || 0;
+      n = Math.trunc(n);
+      if (n > 255) n = 255;
+      if (n < -255) n = -255;
+
+      // represent as signed 16-bit (two's complement) and send low byte first
+      const int16 = n & 0xffff;
+      const low = int16 & 0xff;
+      const high = (int16 >> 8) & 0xff;
+
+      const buf = Buffer.from([1, low, high]);
       this.port.write(buf);
     } catch (e) {
       this.emit("error", e);
     }
+  }
+  setMotorPositionFromPoint(leftLength: number, rightLength: number) {
+    const message = Buffer.alloc(5);
+    message[0] = 1;
+    message.writeInt16LE(Math.round(leftLength), 1);
+    message.writeInt16LE(Math.round(rightLength), 3);
+
+    this.port.write(message, (err: { message: any }) => {
+      if (err) console.error(`Serial write failed: ${err.message}`);
+    });
   }
 }
 
