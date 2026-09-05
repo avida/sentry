@@ -5,8 +5,10 @@ import {
   type LockState,
   translations,
 } from "../i18n";
+import { useObjectRecognitionStore } from "../store/useObjectRecognitionStore";
 import { Reticle, type ReticleCenter } from "./Reticle";
 import WebrtcPlayer from "./WebrtcPlayer";
+import ObjectBoundingBoxes from "./ObjectBoundingBoxes";
 
 interface DisplayProps {
   lockState: LockState;
@@ -28,6 +30,7 @@ export const Display: React.FC<DisplayProps> = ({
 }) => {
   const [locale] = useState<Locale>(getInitialLocale);
   const t = translations[locale];
+  const objects = useObjectRecognitionStore((s) => s.objects);
 
   // WebRTC playback delegated to `WebrtcPlayer` component.
 
@@ -43,6 +46,7 @@ export const Display: React.FC<DisplayProps> = ({
 
         {/* Overlay: HUD elements placed over the video */}
         <div className="display-overlay">
+          <ObjectBoundingBoxes boxes={objects} />
           <div className="reticle-wrap overlay-reticle">
             <Reticle />
           </div>

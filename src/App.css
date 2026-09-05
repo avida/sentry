@@ -423,6 +423,21 @@ input[type="range"] {
   pointer-events: none;
 }
 
+.object-bbox-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.object-bbox {
+  position: absolute;
+  border: 2px solid rgba(86, 209, 255, 0.95);
+  background: rgba(86, 209, 255, 0.08);
+  box-shadow: inset 0 0 12px rgba(86, 209, 255, 0.18), 0 0 18px rgba(86, 209, 255, 0.2);
+  border-radius: 4px;
+}
+
 .display-overlay .overlay-title {
   position: absolute;
   top: 0.6rem;

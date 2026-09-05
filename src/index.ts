@@ -30,7 +30,7 @@ const createWindow = (): void => {
   mainWindow.maximize();
 
   // Open the DevTools in a detached (floating) window.
-  mainWindow.webContents.openDevTools({ mode: 'detach' });
+  // mainWindow.webContents.openDevTools({ mode: 'detach' });
 };
 
 // This method will be called when Electron has finished
