@@ -4,6 +4,10 @@ import { useI18nStore } from "./store/useI18nStore";
 import { useCameraIndexStore } from "./store/useCameraIndexStore";
 import { useHIDControllerStore } from "./store/useHIDControllerStore";
 import { useSerialMotorStore } from "./store/useSerialMotorStore";
+import {
+  useObjectRecognitionStore,
+  OBJECTS_POLL_INTERVAL_MS,
+} from "./store/useObjectRecognitionStore";
 import { Display } from "./components/display";
 import Telemetry from "./components/telemetry";
 import ControlPanel from "./components/controlPanel";
@@ -68,6 +72,13 @@ function App() {
 
     return () => remove();
   }, [setMotorState]);
+
+  const startObjectPolling = useObjectRecognitionStore((s) => s.startPolling);
+
+  useEffect(() => {
+    const stopPolling = startObjectPolling(OBJECTS_POLL_INTERVAL_MS);
+    return () => stopPolling();
+  }, [startObjectPolling]);
 
   const formatSignalingUrl = useCameraIndexStore((s) => s.cameraUrl);
 

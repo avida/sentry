@@ -26,7 +26,7 @@ const config: ForgeConfig = {
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
       mainConfig,
-      devContentSecurityPolicy: "connect-src 'self' http://192.168.44.145:1984 ws://192.168.44.145:1984;",
+      devContentSecurityPolicy: "connect-src 'self' http://192.168.44.145:1984 ws://192.168.44.145:1984 http://localhost:8080",
       renderer: {
         config: rendererConfig,
         entryPoints: [

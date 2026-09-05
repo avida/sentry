@@ -10,36 +10,13 @@
   --reticle-line-color: rgba(66, 231, 105, 0.55);
 }
 
-.reticle-base {
-  position: absolute;
-  left: var(--reticle-base-screen-x, 50%);
-  top: var(--reticle-base-screen-y, 60%);
-  width: var(--reticle-base-width, 300px);
-  height: 4px;
-  transform: translateX(-50%);
-  background: rgba(12, 90, 44, 0.9);
-  box-shadow: 0 0 6px rgba(12, 90, 44, 0.45);
-  pointer-events: none;
-}
-
 .reticle-guides {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-}
-
-.reticle-center-dot {
-  position: absolute;
-  top: var(--reticle-center-y, 50%);
-  left: var(--reticle-center-x, 50%);
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--reticle-line-color);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 4px rgba(205, 216, 168, 0.6);
+  overflow: visible;
 }
 
 .reticle-wrap {
@@ -54,83 +31,6 @@
   /* Allow the reticle area to grow to fill available space */
   flex: 1 1 auto;
   display: flex;
-}
-
-.reticle-post {
-  position: absolute;
-  background: var(--reticle-line-color);
-}
-
-.reticle-post::after {
-  content: "";
-  position: absolute;
-  background-repeat: repeat;
-}
-
-.post-left,
-.post-right {
-  top: var(--reticle-center-y, 50%);
-  height: 3px;
-  transform: translateY(-50%);
-}
-
-.post-left::after,
-.post-right::after {
-  inset: -4px 0;
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--reticle-line-color) 0 2px,
-    transparent 2px 20px
-  );
-}
-
-.post-left {
-  left: 0;
-  width: calc(var(--reticle-center-x, 50%) - var(--reticle-gap));
-}
-
-.post-right {
-  left: calc(var(--reticle-center-x, 50%) + var(--reticle-gap));
-  width: calc(100% - var(--reticle-center-x, 50%) - var(--reticle-gap));
-}
-
-.post-top,
-.post-bottom {
-  left: var(--reticle-center-x, 50%);
-  width: 3px;
-  transform: translateX(-50%);
-}
-
-.post-top::after,
-.post-bottom::after {
-  inset: 0 -4px;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    var(--reticle-line-color) 0 2px,
-    transparent 2px 20px
-  );
-}
-
-.post-top {
-  top: 0;
-  height: calc(var(--reticle-center-y, 50%) - var(--reticle-gap));
-}
-
-.post-bottom {
-  top: calc(var(--reticle-center-y, 50%) + var(--reticle-gap));
-  height: calc(100% - var(--reticle-center-y, 50%) - var(--reticle-gap));
-}
-
-.reticle-center-dot {
-  position: absolute;
-  top: var(--reticle-center-y, 50%);
-  left: var(--reticle-center-x, 50%);
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--reticle-line-color);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 4px rgba(205, 216, 168, 0.6);
 }
 
 .target-dot {

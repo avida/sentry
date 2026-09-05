@@ -12,10 +12,13 @@ interface ReticleProps {
   className?: string;
   center?: ReticleCenter;
 }
-const BASE_LENGTH = 300;
-const BASE_HEIGHT = 100;
 
-const POINT_HALF_RANGE = 150;
+const SVG_VIEWBOX_SIZE = 1000;
+const BASELINE_X = SVG_VIEWBOX_SIZE / 2;
+const BASELINE_Y = 720;
+const BASELINE_HALF_LENGTH = 150;
+const CENTER_GAP = 90;
+const POINT_HALF_RANGE = 650;
 
 export const Reticle: React.FC<ReticleProps> = ({
   className,
@@ -23,6 +26,7 @@ export const Reticle: React.FC<ReticleProps> = ({
 }) => {
   const pointCoordinates = useHIDControllerStore((s) => s.pointCoordinates);
   const motorState = useSerialMotorStore((s) => s);
+
   const resolvedCenter = center ?? {
     x:
       50 +
@@ -35,61 +39,106 @@ export const Reticle: React.FC<ReticleProps> = ({
         POINT_HALF_RANGE) *
         50,
   };
+
   const { x = 50, y = 50 } = resolvedCenter;
 
-  const baseScreenX = 500;
-  const baseScreenY = 500 + (BASE_HEIGHT / POINT_HALF_RANGE) * 300;
-  const baseLeftX = baseScreenX - BASE_LENGTH / 2;
-  const baseRightX = baseScreenX + BASE_LENGTH / 2;
-  const centerX = (x / 100) * 1000;
-  const centerY = (y / 100) * 1000;
-
-  const reticleStyle = {
-    ["--reticle-center-x" as string]: `${x}%`,
-    ["--reticle-center-y" as string]: `${y}%`,
-    ["--reticle-base-width" as string]: `${BASE_LENGTH}px`,
-    ["--reticle-base-screen-x" as string]: `${baseScreenX}%`,
-    ["--reticle-base-screen-y" as string]: `${baseScreenY}%`,
-  } as React.CSSProperties;
+  const cx = clamp(x, 0, 100);
+  const cy = clamp(y, 0, 100);
+  const centerX = (cx / 100) * SVG_VIEWBOX_SIZE;
+  const centerY = (cy / 100) * SVG_VIEWBOX_SIZE;
+  const topY = clamp(cy - CENTER_GAP / SVG_VIEWBOX_SIZE * 100, 0, 100);
+  const bottomY = clamp(cy + CENTER_GAP / SVG_VIEWBOX_SIZE * 100, 0, 100);
+  const leftX = clamp(cx - CENTER_GAP / SVG_VIEWBOX_SIZE * 100, 0, 100);
+  const rightX = clamp(cx + CENTER_GAP / SVG_VIEWBOX_SIZE * 100, 0, 100);
+  const baselineLeftX = BASELINE_X - BASELINE_HALF_LENGTH;
+  const baselineRightX = BASELINE_X + BASELINE_HALF_LENGTH;
 
   return (
     <div
       className={className ? `reticle ${className}` : "reticle"}
-      style={reticleStyle}
       aria-label="Target reticle"
     >
-      <svg className="reticle-guides" aria-hidden="true" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      <svg
+        className="reticle-guides"
+        aria-hidden="true"
+        viewBox={`0 0 ${SVG_VIEWBOX_SIZE} ${SVG_VIEWBOX_SIZE}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
         <line
-          x1={baseLeftX}
-          y1={baseScreenY}
-          x2={baseRightX}
-          y2={baseScreenY}
-          stroke="rgba(12, 90, 44, 0.9)"
+          x1={0}
+          y1={centerY}
+          x2={leftX / 100 * SVG_VIEWBOX_SIZE}
+          y2={centerY}
+          stroke="rgba(66, 231, 105, 0.9)"
           strokeWidth="6"
+          strokeLinecap="round"
         />
         <line
-          x1={baseLeftX}
-          y1={baseScreenY}
+          x1={rightX / 100 * SVG_VIEWBOX_SIZE}
+          y1={centerY}
+          x2={SVG_VIEWBOX_SIZE}
+          y2={centerY}
+          stroke="rgba(66, 231, 105, 0.9)"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <line
+          x1={centerX}
+          y1={0}
+          x2={centerX}
+          y2={topY / 100 * SVG_VIEWBOX_SIZE}
+          stroke="rgba(66, 231, 105, 0.9)"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <line
+          x1={centerX}
+          y1={bottomY / 100 * SVG_VIEWBOX_SIZE}
+          x2={centerX}
+          y2={SVG_VIEWBOX_SIZE}
+          stroke="rgba(66, 231, 105, 0.9)"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <line
+          x1={baselineLeftX}
+          y1={BASELINE_Y}
+          x2={baselineRightX}
+          y2={BASELINE_Y}
+          stroke="rgba(12, 90, 44, 0.9)"
+          strokeWidth="10"
+          strokeLinecap="round"
+        />
+        <line
+          x1={BASELINE_X - BASELINE_HALF_LENGTH}
+          y1={BASELINE_X}
+          x2={BASELINE_X + BASELINE_HALF_LENGTH}
+          y2={BASELINE_X}
+          stroke="rgba(128, 128, 128, 1)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray="4 10"
+        />
+        <line
+          x1={baselineLeftX}
+          y1={BASELINE_Y}
           x2={centerX}
           y2={centerY}
           stroke="rgba(255, 140, 0, 0.9)"
-          strokeWidth="4"
+          strokeWidth="8"
+          strokeLinecap="round"
         />
         <line
-          x1={baseRightX}
-          y1={baseScreenY}
+          x1={baselineRightX}
+          y1={BASELINE_Y}
           x2={centerX}
           y2={centerY}
           stroke="rgba(59, 130, 246, 0.9)"
-          strokeWidth="4"
+          strokeWidth="8"
+          strokeLinecap="round"
         />
+        <circle cx={centerX} cy={centerY} r="12" fill="rgba(66, 231, 105, 0.9)" />
       </svg>
-      <div className="reticle-circle" aria-hidden="true" />
-      <div className="reticle-post post-left" aria-hidden="true" />
-      <div className="reticle-post post-right" aria-hidden="true" />
-      <div className="reticle-post post-top" aria-hidden="true" />
-      <div className="reticle-post post-bottom" aria-hidden="true" />
-      <div className="reticle-center-dot" aria-hidden="true" />
 
       <div className="reticle-motor-overlay" aria-live="polite">
         <div className="reticle-motor-row">
